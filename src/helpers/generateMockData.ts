@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import { Tag, Team, Transaction } from '../types/transactions';
 
 const randomDateBetween = (start: DateTime, end: DateTime) => {
-	const date = DateTime.fromMillis(start.millisecond + Math.random() * (end.millisecond - start.millisecond));
+	const date = DateTime.fromMillis(start.toMillis() + Math.random() * (end.toMillis() - start.toMillis()));
 	return date.toISO();
 };
 
@@ -27,7 +27,7 @@ export const generateData = (numberOfTransactions: number, allTags: Tag[], allTe
 	const data: Transaction[] = [];
 	while (counter >= 0) {
 		const transaction = {
-			date: randomDateBetween(DateTime.fromObject({}), DateTime.now()),
+			date: randomDateBetween(DateTime.now().plus({ months: -3 }).startOf('month'), DateTime.now()),
 			amountInCents: getRandomInt(10000),
 			tags: getRandomTags(allTags),
 			team: allTeams[getRandomInt(allTeams.length)],
