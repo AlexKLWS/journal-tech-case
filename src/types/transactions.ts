@@ -7,3 +7,12 @@ export type Transaction = {
 	tags: Tag[];
 	team: Team;
 };
+
+export type TransactionParsed = {
+	date: string;
+	datePretty: string;
+	amountInCents: number;
+	totalExpense: number;
+	tags: Tag[];
+	team: Team;
+};
