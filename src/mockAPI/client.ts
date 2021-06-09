@@ -77,3 +77,20 @@ export const fetchTeams = async () => {
 		},
 	};
 };
+
+export const fetchMonths = async () => {
+	await randomDelay();
+	const months = [];
+	let monthCounter = 3;
+	while (monthCounter >= 0) {
+		const month = DateTime.now().plus({ month: -monthCounter }).toFormat('MMMM');
+		months.push(month);
+		monthCounter--;
+	}
+	return {
+		status: 200,
+		data: {
+			months,
+		},
+	};
+};
