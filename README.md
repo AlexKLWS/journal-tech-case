@@ -1,4 +1,6 @@
-# Getting Started with Create React App
+# Expenses Graph
+
+<img width="868" alt="Screen Shot 2021-06-10 at 8 06 44 PM" src="https://user-images.githubusercontent.com/13425318/121567707-922ead80-ca27-11eb-8711-1f93d9147498.png">
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
