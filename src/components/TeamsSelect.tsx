@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
-import { Select, Spin } from 'antd';
+import { Spin } from 'antd';
 
 import { MultipleChoiceSelect } from './MultipleChoiceSelect';
-import { useTagsProvider } from '../hooks/tagsProvider';
 import { useTeamsProvider } from '../hooks/teamsProvider';
 
 type Props = {
