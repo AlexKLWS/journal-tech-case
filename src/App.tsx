@@ -1,26 +1,24 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 import './App.css';
 import { useTransactionsProvider } from './hooks/transactionsProvider';
 import 'antd/dist/antd.css';
 import { MonthSelect } from './components/MonthSelect';
-import { TagsSelect } from './components/TagsSelect';
-import { TeamsSelect } from './components/TeamsSelect';
 import { Button } from 'antd';
 import { DateTime } from 'luxon';
+import SelectControls from './components/SelectControls';
 
 const App: React.FC = () => {
 	const { transactions, fetchTransactions } = useTransactionsProvider();
 	const { transactions: comparedTransactions, fetchTransactions: fetchComparedTransactions } =
 		useTransactionsProvider();
 
-	const [selectedMonth, setSelectedMonth] = useState<string>();
-	const [selectedTags, setSelectedTags] = useState<string[]>();
-	const [selectedTeams, setSelectedTeams] = useState<string[]>();
+	const selectedTagsRef = useRef<string[]>();
+	const selectedTeamsRef = useRef<string[]>();
+	const selectedComapredTagsRef = useRef<string[]>();
+	const selectedComapredTeamsRef = useRef<string[]>();
 
-	const [selectedComapredMonth, setSelectedComapredMonth] = useState<string>();
-	const [selectedComapredTags, setSelectedComapredTags] = useState<string[]>();
-	const [selectedComapredTeams, setSelectedComapredTeams] = useState<string[]>();
+	const [selectedMonth, setSelectedMonth] = useState<string>();
 
 	const [isComparing, setIsComparing] = useState(false);
 
@@ -28,33 +26,22 @@ const App: React.FC = () => {
 		setSelectedMonth(value);
 	};
 
-	const handleTagsChange = (value: string[]) => {
-		setSelectedTags(value);
-	};
-
-	const handleTeamsChange = (value: string[]) => {
-		setSelectedTeams(value);
-	};
-
 	useEffect(() => {
+		fetchTransactions(selectedMonth, selectedTagsRef.current, selectedTeamsRef.current);
+		fetchComparedTransactions(selectedMonth, selectedComapredTagsRef.current, selectedComapredTeamsRef.current);
+	}, [selectedMonth]);
+
+	const onSelectedValuesChange = (selectedTags?: string[], selectedTeams?: string[]) => {
 		fetchTransactions(selectedMonth, selectedTags, selectedTeams);
-	}, [selectedMonth, selectedTags, selectedTeams]);
-
-	const handleComparedMonthChange = (value: string) => {
-		setSelectedComapredMonth(value);
+		selectedTagsRef.current = selectedTags;
+		selectedTeamsRef.current = selectedTeams;
 	};
 
-	const handleComparedTagsChange = (value: string[]) => {
-		setSelectedComapredTags(value);
+	const onComparedSelectedValuesChange = (selectedTags?: string[], selectedTeams?: string[]) => {
+		fetchComparedTransactions(selectedMonth, selectedTags, selectedTeams);
+		selectedComapredTagsRef.current = selectedTags;
+		selectedComapredTeamsRef.current = selectedTeams;
 	};
-
-	const handleComparedTeamsChange = (value: string[]) => {
-		setSelectedComapredTeams(value);
-	};
-
-	useEffect(() => {
-		fetchComparedTransactions(selectedComapredMonth, selectedComapredTags, selectedComapredTeams);
-	}, [selectedComapredMonth, selectedComapredTags, selectedComapredTeams]);
 
 	const data = useMemo(() => {
 		if (!isComparing) {
@@ -74,6 +61,11 @@ const App: React.FC = () => {
 
 	return (
 		<div className="App">
+			<div>
+				<div style={{ paddingBottom: '4vw', display: 'flex', alignItems: 'flex-start' }}>
+					<MonthSelect handleMonthChange={handleMonthChange} selectedMonth={selectedMonth} />
+				</div>
+			</div>
 			<AreaChart width={730} height={250} data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
 				<defs>
 					<linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
@@ -108,53 +100,10 @@ const App: React.FC = () => {
 					/>
 				)}
 			</AreaChart>
-			<div
-				style={{
-					display: 'flex',
-					alignItems: 'center',
-					justifyContent: 'space-between',
-					border: '2px solid #61dafb',
-				}}
-			>
-				<div style={{ padding: '2vw' }}>
-					<MonthSelect handleMonthChange={handleMonthChange} selectedMonth={selectedMonth} />
-				</div>
-				<div style={{ padding: '2vw' }}>
-					<TagsSelect handleTagsChange={handleTagsChange} selectedTags={selectedTags} />
-				</div>
-				<div style={{ padding: '2vw' }}>
-					<TeamsSelect handleTeamsChange={handleTeamsChange} selectedTeams={selectedTeams} />
-				</div>
-			</div>
+			<SelectControls onValuesChange={onSelectedValuesChange} borderColor={'#61dafb'} />
 			<div style={{ paddingTop: '2vw' }}>
 				{isComparing ? (
-					<div
-						style={{
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'space-between',
-							border: '2px solid #6bfb61',
-						}}
-					>
-						<div style={{ padding: '2vw' }}>
-							<MonthSelect
-								handleMonthChange={handleComparedMonthChange}
-								selectedMonth={selectedComapredMonth}
-							/>
-						</div>
-						<div style={{ padding: '2vw' }}>
-							<TagsSelect
-								handleTagsChange={handleComparedTagsChange}
-								selectedTags={selectedComapredTags}
-							/>
-						</div>
-						<div style={{ padding: '2vw' }}>
-							<TeamsSelect
-								handleTeamsChange={handleComparedTeamsChange}
-								selectedTeams={selectedComapredTeams}
-							/>
-						</div>
-					</div>
+					<SelectControls onValuesChange={onComparedSelectedValuesChange} borderColor={'#6bfb61'} />
 				) : (
 					<Button
 						onClick={() => {
