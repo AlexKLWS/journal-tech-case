@@ -25,7 +25,7 @@ export const MultipleChoiceSelect: React.FC<PropsWithChildren<Props>> = (props) 
 		<Select
 			mode="multiple"
 			allowClear
-			style={{ minWidth: '20rem' }}
+			style={{ minWidth: '20vw' }}
 			placeholder="Please select"
 			defaultValue={props.defaultValue}
 			onChange={props.handleChange}
